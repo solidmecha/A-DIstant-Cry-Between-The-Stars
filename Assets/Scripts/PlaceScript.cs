@@ -198,8 +198,18 @@ public class PlaceScript : MonoBehaviour {
             {
                 if (ShipCount[0] > 0 || UnitCount[0] + UnitCount[1] + UnitCount[2] > 0)
                 {
+                    string s = " Leaders";
+                    if (UnitCount[2] == 1)
+                    {
+                        if (LeaderID == 0)
+                            s = " General";
+                        else if (LeaderID == 6)
+                            s = " Merchant";
+                        else if (LeaderID == 7)
+                            s = " Diplomat";
+                    }
                     GameControl.singleton.MsgText.text = ShipCount[0].ToString() + " Ships, " + UnitCount[0].ToString() + " Militia, "
-                   + UnitCount[1].ToString() + " Mechs, " + UnitCount[2].ToString() + " Leaders";
+                   + UnitCount[1].ToString() + " Mechs, " + UnitCount[2].ToString() + s;
                 }
                 else
                 {

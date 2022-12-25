@@ -58,11 +58,12 @@ public class GameControl : MonoBehaviour {
             UnitIndex = 3;
             PC.ShipIndex = 0;
             PC.UnitIndex = 0;
+            MoveSlider.transform.GetChild(0).GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().sprite = UnitSprites[7];
+            MoveSlider.transform.GetChild(0).GetChild(5).GetChild(2).GetChild(0).GetComponent<Image>().sprite = UnitSprites[4];
+            MoveSlider.transform.GetChild(0).GetChild(6).GetChild(2).GetChild(0).GetComponent<Image>().sprite = UnitSprites[5];
+            MoveSlider.transform.GetChild(0).GetChild(7).GetChild(2).GetChild(0).GetComponent<Image>().sprite = UnitSprites[6];
         }
-        MoveSlider.transform.GetChild(0).GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().sprite = UnitSprites[UnitIndex+3];
-        MoveSlider.transform.GetChild(0).GetChild(5).GetChild(2).GetChild(0).GetComponent<Image>().sprite = UnitSprites[UnitIndex ];
-        MoveSlider.transform.GetChild(0).GetChild(6).GetChild(2).GetChild(0).GetComponent<Image>().sprite = UnitSprites[UnitIndex + 1];
-        MoveSlider.transform.GetChild(0).GetChild(7).GetChild(2).GetChild(0).GetComponent<Image>().sprite = UnitSprites[UnitIndex + 2];
+
         CurrentState = GameState.PlayerTurn;
         ShipControl.singleton.SetAIShips();
         BattleControl.singleton.SetPlayerOwned();
@@ -286,7 +287,17 @@ public class GameControl : MonoBehaviour {
         }
         else
         {
-                MsgText.text = SelectedPlace.ShipCount[0].ToString() + " Ships, " + SelectedPlace.UnitCount[0].ToString() + " Militia, "
+            string s = " Leaders";
+            if (SelectedPlace.UnitCount[2] == 1)
+            {
+                if (SelectedPlace.LeaderID == 0)
+                    s = " General";
+                else if (SelectedPlace.LeaderID == 6)
+                    s = " Merchant";
+                else if (SelectedPlace.LeaderID == 7)
+                    s = " Diplomat";
+            }
+            MsgText.text = SelectedPlace.ShipCount[0].ToString() + " Ships, " + SelectedPlace.UnitCount[0].ToString() + " Militia, "
                + SelectedPlace.UnitCount[1].ToString() + " Mechs, " + SelectedPlace.UnitCount[2].ToString() + " Leaders";
         }
     }
