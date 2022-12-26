@@ -8,46 +8,66 @@ public class PlayerControl : MonoBehaviour {
 
     public void TakeTurn()
     {
-        int p = GameControl.singleton.RNG.Next(24);
-        if(GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex]+ GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex+1]
-            + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex+2]>0 || GameControl.singleton.Places[p].ShipCount[GameControl.singleton.ShipIndex]>0)
-            p= GameControl.singleton.RNG.Next(24);
-        if (GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex] + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 1]
-            + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 2] > 0 || GameControl.singleton.Places[p].ShipCount[GameControl.singleton.ShipIndex] > 0)
-            p = GameControl.singleton.RNG.Next(24);
-        if (GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex] + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 1]
-            + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 2] > 0 || GameControl.singleton.Places[p].ShipCount[GameControl.singleton.ShipIndex] > 0)
-            p = GameControl.singleton.RNG.Next(24);
-        if (GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex] + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 1]
-            + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 2] > 0 || GameControl.singleton.Places[p].ShipCount[GameControl.singleton.ShipIndex] > 0)
-            p = GameControl.singleton.RNG.Next(24);
-        if (GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex] + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 1]
-            + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 2] > 0 || GameControl.singleton.Places[p].ShipCount[GameControl.singleton.ShipIndex] > 0)
-            p = GameControl.singleton.RNG.Next(24);
-        if (GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex] + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 1]
-            + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 2] > 0 || GameControl.singleton.Places[p].ShipCount[GameControl.singleton.ShipIndex] > 0)
-            { }
-        else
+        List<int> PlayerFreeIndex = new List<int>();
+        for (int p = 0; p < 24; p++)
         {
+            if (GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex] + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 1]
+            + GameControl.singleton.Places[p].UnitCount[GameControl.singleton.UnitIndex + 2] == 0 && GameControl.singleton.Places[p].ShipCount[GameControl.singleton.ShipIndex] == 0)
+                PlayerFreeIndex.Add(p);
+        }
+        if (PlayerFreeIndex.Count > 0)
+        {
+            int p = PlayerFreeIndex[GameControl.singleton.RNG.Next(PlayerFreeIndex.Count)];
             switch (GameControl.singleton.RNG.Next(4))
             {
-            case 0:
-                if (GameControl.singleton.Places[p].ResourceID < 3)
-                    Gather(GameControl.singleton.Places[p]);
-                break;
-            case 1:
-                if (GameControl.singleton.Places[p].BuildingID < 2)
-                    Build(GameControl.singleton.Places[p]);
-                break;
-            case 2:
-                PlaceUnits(GameControl.singleton.Places[p]);
-                break;
-            case 3:
-                Liberate(GameControl.singleton.Places[p]);
-                break;
+                case 0:
+                    if (GameControl.singleton.Places[p].ResourceID < 3)
+                        Gather(GameControl.singleton.Places[p]);
+                    break;
+                case 1:
+                    if (GameControl.singleton.Places[p].BuildingID < 2)
+                        Build(GameControl.singleton.Places[p]);
+                    break;
+                case 2:
+                    PlaceUnits(GameControl.singleton.Places[p]);
+                    break;
+                case 3:
+                    Liberate(GameControl.singleton.Places[p]);
+                    break;
+            }
+            if (GameControl.singleton.RegimePlayer)
+            {
+                if (GameControl.singleton.RNG.Next(2) == 1)
+                {
+                    int c = GameControl.singleton.RNG.Next(1, 3);
+                    for (int i = 0; i < c; i++)
+                    {
+                        Liberate(GameControl.singleton.Places[PlayerFreeIndex[GameControl.singleton.RNG.Next(PlayerFreeIndex.Count)]]);
+                    }
+                }
+            }
+            else
+            {
+                if (GameControl.singleton.RNG.Next(3) == 1)
+                {
+
+                }
             }
         }
         GameControl.singleton.CurrentState = GameControl.GameState.PlayerTurn;
+    }
+
+    public void AttackLeads(List<int> PlayerFreeIndex)
+    {
+        List<int> LeaderLoc = new List<int> { };
+        for (int i = 0; i < 24; i++)
+        {
+            if (GameControl.singleton.Places[i].HasPlayerLead())
+                LeaderLoc.Add(i);
+        }
+        GameControl.singleton.StartPlace = GameControl.singleton.Places[PlayerFreeIndex[GameControl.singleton.RNG.Next(PlayerFreeIndex.Count)]];
+        GameControl.singleton.SelectedPlace = GameControl.singleton.Places[LeaderLoc[GameControl.singleton.RNG.Next(LeaderLoc.Count)]];
+        Move();
     }
 
     public void PlaceUnits(PlaceScript p)
@@ -55,14 +75,14 @@ public class PlayerControl : MonoBehaviour {
         if(GameControl.singleton.RegimePlayer)
         {
             p.UnitCount[0] = GameControl.singleton.RNG.Next(5);
-            p.UnitCount[1]= GameControl.singleton.RNG.Next(4);
-            p.ShipCount[0] = GameControl.singleton.RNG.Next(13);
+            p.UnitCount[1]= GameControl.singleton.RNG.Next(5);
+            p.ShipCount[0] = GameControl.singleton.RNG.Next(5);
         }
         else
         {
             p.UnitCount[3] = GameControl.singleton.RNG.Next(5);
-            p.UnitCount[4] = GameControl.singleton.RNG.Next(4);
-            p.ShipCount[1] = GameControl.singleton.RNG.Next(13);
+            p.UnitCount[4] = GameControl.singleton.RNG.Next(5);
+            p.ShipCount[1] = GameControl.singleton.RNG.Next(5);
         }
         print(p.name+ " placed");
     }
@@ -84,6 +104,7 @@ public class PlayerControl : MonoBehaviour {
 
     public void Move()
     {
+        print(GameControl.singleton.StartPlace.name + " vs " + GameControl.singleton.SelectedPlace.name);
         GameControl.singleton.SelectedPlace.ShipCount[ShipIndex] += GameControl.singleton.StartPlace.ShipCount[ShipIndex];
         GameControl.singleton.StartPlace.ShipCount[ShipIndex] = 0;
         for (int i = 0; i < 3; i++)

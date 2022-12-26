@@ -143,7 +143,7 @@ public class GameControl : MonoBehaviour {
     {
         if (SelectedPlace.ResourceID < 3)
         {
-            Resources[ShipIndex][SelectedPlace.ResourceID] +=RNG.Next(1, 5);
+            Resources[ShipIndex][SelectedPlace.ResourceID] +=RNG.Next(2, 8);
             SelectedPlace.ResourceID += RNG.Next(5, 10);
             UpdateResourceText();
             SetActionsvisible(false);
@@ -172,7 +172,7 @@ public class GameControl : MonoBehaviour {
         if (PlayerTech.Count>0)
         {
             TechText[0].text = TechRef.Description(PlayerTech[TechIndex]);
-            TechText[1].text = TechIndex.ToString() + "/" + PlayerTech.Count.ToString();
+            TechText[1].text = (TechIndex+1).ToString() + "/" + PlayerTech.Count.ToString();
         }
         else
         {
@@ -388,36 +388,43 @@ public class GameControl : MonoBehaviour {
     }
     public void MakeMove()
     {
-        if (SelectedPlace.HasPlayerLead() && MoveSlider.transform.GetChild(0).GetChild(5 + 2).GetComponent<Slider>().value == 1)
+        if (MoveSlider.transform.GetChild(0).GetChild(4).GetComponent<Slider>().value == 0)
         {
-            if(RegimePlayer)
-                MsgText.text = "Cannot stack Elites";
-            else
-                MsgText.text = "Cannot stack Leaders";
+            MsgText.text = "Must Move at least 1 Ship";
         }
         else
         {
-            Resources[ShipIndex][0] -= 1;
-            UpdateResourceText();
-            StartPlace.ShipCount[ShipIndex] -= (int)MoveSlider.transform.GetChild(0).GetChild(4).GetComponent<Slider>().value;
-            SelectedPlace.ShipCount[ShipIndex] += (int)MoveSlider.transform.GetChild(0).GetChild(4).GetComponent<Slider>().value;
-            for (int i = 0; i < 3; i++)
+            if (SelectedPlace.HasPlayerLead() && MoveSlider.transform.GetChild(0).GetChild(5 + 2).GetComponent<Slider>().value == 1)
             {
-                StartPlace.UnitCount[UnitIndex + i] -= (int)MoveSlider.transform.GetChild(0).GetChild(5 + i).GetComponent<Slider>().value;
-                SelectedPlace.UnitCount[UnitIndex + i] += (int)MoveSlider.transform.GetChild(0).GetChild(5 + i).GetComponent<Slider>().value;
+                if (RegimePlayer)
+                    MsgText.text = "Cannot stack Elites";
+                else
+                    MsgText.text = "Cannot stack Leaders";
             }
-            if (!RegimePlayer && SelectedPlace.HasPlayerLead())
+            else
             {
-                SelectedPlace.LeaderID = StartPlace.LeaderID;
-                StartPlace.LeaderID = -1;
-                SelectedPlace.transform.GetChild(2).GetComponent<SpriteRenderer>().sprite = singleton.UnitSprites[2+SelectedPlace.LeaderID];
-            }
+                Resources[ShipIndex][0] -= 1;
+                UpdateResourceText();
+                StartPlace.ShipCount[ShipIndex] -= (int)MoveSlider.transform.GetChild(0).GetChild(4).GetComponent<Slider>().value;
+                SelectedPlace.ShipCount[ShipIndex] += (int)MoveSlider.transform.GetChild(0).GetChild(4).GetComponent<Slider>().value;
+                for (int i = 0; i < 3; i++)
+                {
+                    StartPlace.UnitCount[UnitIndex + i] -= (int)MoveSlider.transform.GetChild(0).GetChild(5 + i).GetComponent<Slider>().value;
+                    SelectedPlace.UnitCount[UnitIndex + i] += (int)MoveSlider.transform.GetChild(0).GetChild(5 + i).GetComponent<Slider>().value;
+                }
+                if (!RegimePlayer && SelectedPlace.HasPlayerLead() && !StartPlace.HasPlayerLead())
+                {
+                    SelectedPlace.LeaderID = StartPlace.LeaderID;
+                    StartPlace.LeaderID = -1;
+                    SelectedPlace.transform.GetChild(2).GetComponent<SpriteRenderer>().sprite = singleton.UnitSprites[2 + SelectedPlace.LeaderID];
+                }
 
-            SelectedPlace.SpaceBattleCheck(true);
-            MoveSlider.transform.position = new Vector3(100, 100, -100);
-            CurrentState = GameState.PlayerTurn;
-            UpdateMapUnits();
-            MsgText.text = "";
+                SelectedPlace.SpaceBattleCheck(true);
+                MoveSlider.transform.position = new Vector3(100, 100, -100);
+                CurrentState = GameState.PlayerTurn;
+                UpdateMapUnits();
+                MsgText.text = "";
+            }
         }
     }
 
@@ -431,8 +438,11 @@ public class GameControl : MonoBehaviour {
                 StartPlace.UnitCount[i] = SelectedPlace.UnitCount[i];
                 SelectedPlace.UnitCount[i] = 0;
             }
-            if (!RegimePlayer && StartPlace.UnitCount[2] == 1)
+            if (!RegimePlayer && SelectedPlace.UnitCount[2] == 1)
+            {
                 StartPlace.LeaderID = SelectedPlace.LeaderID;
+                SelectedPlace.LeaderID = -1;
+            }
         }
         else
         {
@@ -441,8 +451,11 @@ public class GameControl : MonoBehaviour {
                 StartPlace.UnitCount[i] = SelectedPlace.UnitCount[i];
                 SelectedPlace.UnitCount[i] = 0;
             }
-            if (RegimePlayer && StartPlace.UnitCount[2] == 1)
+            if (RegimePlayer && SelectedPlace.UnitCount[2] == 1)
+            {
                 StartPlace.LeaderID = SelectedPlace.LeaderID;
+                SelectedPlace.LeaderID = -1;
+            }
         }
     }
 
@@ -459,6 +472,10 @@ public class GameControl : MonoBehaviour {
         foreach (PlaceScript p in Places)
             p.Tick();
         PC.TakeTurn();
+        Resources[ShipIndex][0]++;
+        Resources[ShipIndex][1]++;
+        Resources[ShipIndex][2]++;
+        UpdateResourceText();
     }
 
     public void SetMenuButtons()
@@ -481,6 +498,8 @@ public class GameControl : MonoBehaviour {
             else
                 allowedActions[6] = SelectedPlace.UnitCount[2] == 1;
         }
+        else
+            allowedActions[6] = false;
 
         for (int i = 0; i < 8; i++)
             PlayerActionPanel.transform.GetChild(0).GetChild(0).GetChild(i).GetComponent<Button>().interactable = allowedActions[i];

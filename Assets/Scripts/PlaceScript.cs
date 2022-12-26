@@ -145,7 +145,7 @@ public class PlaceScript : MonoBehaviour {
             GameControl.singleton.PlayerActionPanel.transform.position = transform.GetChild(6).position;
             GameControl.singleton.CurrentState= GameControl.GameState.Menu;
         }
-        else if(GameControl.singleton.CurrentState == GameControl.GameState.Move)
+        else if(GameControl.singleton.CurrentState == GameControl.GameState.Move && ShipCount[GameControl.singleton.ShipIndex]>0)
         {
             GameControl.singleton.CurrentState = GameControl.GameState.FX;
             GameControl.singleton.StartPlace = this;
@@ -163,12 +163,20 @@ public class PlaceScript : MonoBehaviour {
             {
                 ShipControl.singleton.BeginFleet(name, (UnitCount[0] + UnitCount[1] + UnitCount[2] > 0 && UnitCount[3] + UnitCount[4] + UnitCount[5] > 0), GameControl.singleton.UnitIndex == 3);
             }
+            else if(UnitCount[0] + UnitCount[1] + UnitCount[2] > 0 && UnitCount[3] + UnitCount[4] + UnitCount[5] > 0)
+            {
+                BattleControl.singleton.SetUpBattle(GameControl.singleton.SelectedPlace.name);
+            }
         }
         else
         {
             if (ShipCount[0] > 0 && ShipCount[1] > 0)
             {
                 ShipControl.singleton.BeginFleet(name, (UnitCount[0] + UnitCount[1] + UnitCount[2] > 0 && UnitCount[3] + UnitCount[4] + UnitCount[5] > 0), GameControl.singleton.UnitIndex != 3);
+            }
+            else if (UnitCount[0] + UnitCount[1] + UnitCount[2] > 0 && UnitCount[3] + UnitCount[4] + UnitCount[5] > 0)
+            {
+                BattleControl.singleton.SetUpBattle(GameControl.singleton.SelectedPlace.name);
             }
         }
     }

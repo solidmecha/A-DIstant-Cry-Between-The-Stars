@@ -34,6 +34,8 @@ public class BattleControl : MonoBehaviour {
             u.PlayerOwned = (u.ID > 2 && GameControl.singleton.RegimePlayer) || (u.ID < 3 && !GameControl.singleton.RegimePlayer);
             u.visible = true;
             u.transform.position = u.startPos;
+            u.GetComponent<LineRenderer>().SetPosition(0, u.startPos);
+            u.Target = null;
         }
     }
 
