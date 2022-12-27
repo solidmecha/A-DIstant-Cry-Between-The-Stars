@@ -265,6 +265,7 @@ public class GameControl : MonoBehaviour {
             else
                 MsgText.text = "Gained " + I.ToString() + " Tanks";
             SelectedPlace.BuildingID = 3;
+            UpdateResourceText();
         }
         else if(SelectedPlace.BuildingID==1 && Resources[ShipIndex][1] >= ShipCost[0] && Resources[ShipIndex][2] >= ShipCost[1])
         {
@@ -274,6 +275,7 @@ public class GameControl : MonoBehaviour {
             SelectedPlace.ShipCount[ShipIndex] += I;
             MsgText.text = "Gained " + I.ToString() + " Ships";
             SelectedPlace.BuildingID = 3;
+            UpdateResourceText();
         }
     }
 

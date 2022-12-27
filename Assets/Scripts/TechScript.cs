@@ -24,9 +24,11 @@ public class TechScript : MonoBehaviour {
                 {
                     foreach (ShipScript s in ShipControl.singleton.Ships)
                     {
-                        if(s.PlayerOwned)
+                        if (s.PlayerOwned)
+                        {
                             s.Atk += 2;
-                        s.ShowVals();
+                            s.ShowVals();
+                        }
                     }
                     foreach (ZoneScript z in ShipControl.singleton.Zones)
                         z.CalcValue();
@@ -36,8 +38,10 @@ public class TechScript : MonoBehaviour {
                     foreach (UnitScript u in BattleControl.singleton.Units)
                     {
                         if (u.PlayerOwned)
+                        {
                             u.Atk += 2;
-                        u.ShowVals();
+                            u.ShowVals();
+                        }
                     }
                 }
                 break;
@@ -46,9 +50,11 @@ public class TechScript : MonoBehaviour {
                 {
                     foreach (ShipScript s in ShipControl.singleton.Ships)
                     {
-                        if(s.PlayerOwned)
+                        if (s.PlayerOwned)
+                        {
                             s.Def += 2;
-                        s.ShowVals();
+                            s.ShowVals();
+                        }
                     }
                     foreach (ZoneScript z in ShipControl.singleton.Zones)
                         z.CalcValue();
@@ -58,8 +64,10 @@ public class TechScript : MonoBehaviour {
                     foreach (UnitScript u in BattleControl.singleton.Units)
                     {
                         if (u.PlayerOwned)
+                        {
                             u.Def += 2;
-                        u.ShowVals();
+                            u.ShowVals();
+                        }
                     }
                 }
                 break;
@@ -69,8 +77,10 @@ public class TechScript : MonoBehaviour {
                     foreach (ShipScript s in ShipControl.singleton.Ships)
                     {
                         if (s.PlayerOwned)
+                        {
                             s.RollAttack();
-                        s.ShowVals();
+                            s.ShowVals();
+                        }
                     }
                     foreach (ZoneScript z in ShipControl.singleton.Zones)
                         z.CalcValue();
@@ -94,8 +104,10 @@ public class TechScript : MonoBehaviour {
                     foreach (ShipScript s in ShipControl.singleton.Ships)
                     {
                         if (s.PlayerOwned)
+                        {
                             s.RollDef();
-                        s.ShowVals();
+                            s.ShowVals();
+                        }
                     }
                     foreach (ZoneScript z in ShipControl.singleton.Zones)
                         z.CalcValue();
@@ -133,7 +145,7 @@ public class TechScript : MonoBehaviour {
                     {
                         u.Atk = GameControl.singleton.UnitMax[u.ID] - u.Atk;
                             u.Def =GameControl.singleton.UnitMax[u.ID]-u.Def;
-                        if (!u.Vals[0].Equals("??"))
+                        if (!u.Vals[0].Equals("?"))
                             u.ShowVals();
                     }
                 }
@@ -149,7 +161,7 @@ public class TechScript : MonoBehaviour {
                     else if(ShipControl.singleton.ShipCounts[0] < ShipControl.singleton.ShipCounts[1] && GameControl.singleton.ShipIndex == 0)
                     {
                         ShipControl.singleton.ShipCounts[1]--;
-                        ShipControl.singleton.ShipCountText[1].text = ShipControl.singleton.ShipCounts[0].ToString();
+                        ShipControl.singleton.ShipCountText[1].text = ShipControl.singleton.ShipCounts[1].ToString();
                     }
                 }
                 else
@@ -188,8 +200,8 @@ public class TechScript : MonoBehaviour {
                         {
                             s.RollAttack();
                             s.RollDef();
+                            s.ShowVals();
                         }
-                        s.ShowVals();
                     }
                     foreach (ZoneScript z in ShipControl.singleton.Zones)
                         z.CalcValue();

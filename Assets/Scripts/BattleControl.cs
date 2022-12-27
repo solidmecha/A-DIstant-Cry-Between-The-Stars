@@ -35,6 +35,7 @@ public class BattleControl : MonoBehaviour {
             u.visible = true;
             u.transform.position = u.startPos;
             u.GetComponent<LineRenderer>().SetPosition(0, u.startPos);
+            u.GetComponent<LineRenderer>().SetPosition(1, u.startPos);
             u.Target = null;
         }
     }
