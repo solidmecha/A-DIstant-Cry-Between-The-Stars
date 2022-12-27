@@ -37,37 +37,78 @@ public class PlayerControl : MonoBehaviour {
             }
             if (GameControl.singleton.RegimePlayer)
             {
-                if (GameControl.singleton.RNG.Next(2) == 1)
+                if (GameControl.singleton.RNG.Next(3) == 1)
                 {
-                    int c = GameControl.singleton.RNG.Next(1, 3);
+                    int c = GameControl.singleton.RNG.Next(1, 5);
                     for (int i = 0; i < c; i++)
                     {
+                        GameControl.singleton.Resources[0][0] += GameControl.singleton.RNG.Next(5);
+                        GameControl.singleton.Resources[0][1] += GameControl.singleton.RNG.Next(5);
+                        GameControl.singleton.Resources[0][2] += GameControl.singleton.RNG.Next(5);
                         Liberate(GameControl.singleton.Places[PlayerFreeIndex[GameControl.singleton.RNG.Next(PlayerFreeIndex.Count)]]);
+                        CheckWin();
                     }
+                    PlaceUnits(GameControl.singleton.Places[PlayerFreeIndex[GameControl.singleton.RNG.Next(PlayerFreeIndex.Count)]]);
+                    AttackMove();
                 }
             }
             else
             {
-                if (GameControl.singleton.RNG.Next(3) == 1)
+                if (GameControl.singleton.RNG.Next(5) == 1)
                 {
-
+                    AttackLeads();
+                    CheckWin();
                 }
             }
         }
         GameControl.singleton.CurrentState = GameControl.GameState.PlayerTurn;
     }
 
-    public void AttackLeads(List<int> PlayerFreeIndex)
+    public void AttackLeads()
     {
+        List<int> PlayerFreeIndex = new List<int> { };
         List<int> LeaderLoc = new List<int> { };
         for (int i = 0; i < 24; i++)
         {
             if (GameControl.singleton.Places[i].HasPlayerLead())
                 LeaderLoc.Add(i);
+            else if(GameControl.singleton.Places[i].ShipCount[ShipIndex]>0 && 
+                GameControl.singleton.Places[i].UnitCount[UnitIndex]+ GameControl.singleton.Places[i].UnitCount[UnitIndex+1]+GameControl.singleton.Places[i].UnitCount[UnitIndex+2] > 0)
+            {
+                PlayerFreeIndex.Add(i);
+            }
         }
-        GameControl.singleton.StartPlace = GameControl.singleton.Places[PlayerFreeIndex[GameControl.singleton.RNG.Next(PlayerFreeIndex.Count)]];
-        GameControl.singleton.SelectedPlace = GameControl.singleton.Places[LeaderLoc[GameControl.singleton.RNG.Next(LeaderLoc.Count)]];
-        Move();
+        if (PlayerFreeIndex.Count > 0 && LeaderLoc.Count > 0)
+        {
+            GameControl.singleton.StartPlace = GameControl.singleton.Places[PlayerFreeIndex[GameControl.singleton.RNG.Next(PlayerFreeIndex.Count)]];
+            GameControl.singleton.SelectedPlace = GameControl.singleton.Places[LeaderLoc[GameControl.singleton.RNG.Next(LeaderLoc.Count)]];
+            Move();
+        }
+    }
+
+    public void AttackMove()
+    {
+        List<int> PlayerFreeIndex = new List<int> { };
+        List<int> PlayerLoc = new List<int> { };
+        for (int i = 0; i < 24; i++)
+        {
+            if (GameControl.singleton.Places[i].ShipCount[GameControl.singleton.ShipIndex] > 0 &&
+                GameControl.singleton.Places[i].UnitCount[GameControl.singleton.UnitIndex] + GameControl.singleton.Places[i].UnitCount[GameControl.singleton.UnitIndex + 1] + GameControl.singleton.Places[i].UnitCount[GameControl.singleton.UnitIndex + 2] > 0)
+            {
+                PlayerLoc.Add(i);
+            }
+            else if (GameControl.singleton.Places[i].ShipCount[ShipIndex] > 0 &&
+                GameControl.singleton.Places[i].UnitCount[UnitIndex] + GameControl.singleton.Places[i].UnitCount[UnitIndex + 1] + GameControl.singleton.Places[i].UnitCount[UnitIndex + 2] > 0)
+            {
+                PlayerFreeIndex.Add(i);
+            }
+        }
+        if (PlayerFreeIndex.Count > 0 && PlayerLoc.Count > 0)
+        {
+            GameControl.singleton.StartPlace = GameControl.singleton.Places[PlayerFreeIndex[GameControl.singleton.RNG.Next(PlayerFreeIndex.Count)]];
+            GameControl.singleton.SelectedPlace = GameControl.singleton.Places[PlayerLoc[GameControl.singleton.RNG.Next(PlayerLoc.Count)]];
+            Move();
+        }
     }
 
     public void PlaceUnits(PlaceScript p)
@@ -84,7 +125,7 @@ public class PlayerControl : MonoBehaviour {
             p.UnitCount[4] = GameControl.singleton.RNG.Next(5);
             p.ShipCount[1] = GameControl.singleton.RNG.Next(5);
         }
-        print(p.name+ " placed");
+        //print(p.name+ " placed");
     }
 
     public void Gather(PlaceScript p)
@@ -104,7 +145,6 @@ public class PlayerControl : MonoBehaviour {
 
     public void Move()
     {
-        print(GameControl.singleton.StartPlace.name + " vs " + GameControl.singleton.SelectedPlace.name);
         GameControl.singleton.SelectedPlace.ShipCount[ShipIndex] += GameControl.singleton.StartPlace.ShipCount[ShipIndex];
         GameControl.singleton.StartPlace.ShipCount[ShipIndex] = 0;
         for (int i = 0; i < 3; i++)

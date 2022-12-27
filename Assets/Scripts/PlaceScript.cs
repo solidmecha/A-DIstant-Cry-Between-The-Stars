@@ -147,6 +147,7 @@ public class PlaceScript : MonoBehaviour {
         }
         else if(GameControl.singleton.CurrentState == GameControl.GameState.Move && ShipCount[GameControl.singleton.ShipIndex]>0)
         {
+            GameControl.singleton.CancelMove.transform.position = new Vector3(100, 100, -100);
             GameControl.singleton.CurrentState = GameControl.GameState.FX;
             GameControl.singleton.StartPlace = this;
             GameControl.singleton.MoveSlider.transform.position = Vector3.zero;

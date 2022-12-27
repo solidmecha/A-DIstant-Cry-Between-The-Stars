@@ -68,14 +68,14 @@ public class BattleAI : MonoBehaviour {
             case 1:
                 return GameControl.singleton.RNG.Next(6, 9);
             case 2:
-                return 13;
+                return 20;
             case 3:
                 return 6;
             case 4:
                 return 9;
             case 5:
-                return 15;
-            default: return GameControl.singleton.RNG.Next(4,5);
+                return 24;
+            default: return GameControl.singleton.RNG.Next(4,7);
         }
         
     }

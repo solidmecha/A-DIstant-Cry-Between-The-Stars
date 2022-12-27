@@ -23,7 +23,7 @@ public class UnitScript : MonoBehaviour {
         {
             if (ID == 5)
             {
-                if(BattleControl.singleton.UnitCounts[2]==0 && BattleControl.singleton.UnitCounts[3] == 0)
+                if(BattleControl.singleton.UnitCounts[3]==0 && BattleControl.singleton.UnitCounts[4] == 0)
                 {
                     BattleControl.singleton.activeUnit.Target = this;
                     BattleControl.singleton.activeUnit.ShowTarget();

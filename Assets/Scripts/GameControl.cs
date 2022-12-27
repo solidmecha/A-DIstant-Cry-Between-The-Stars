@@ -40,6 +40,7 @@ public class GameControl : MonoBehaviour {
     public int SetBacks;
     public int[] LiberationCost;
     public PlayerControl PC;
+    public Button CancelMove;
 
     private void Awake()
     {
@@ -74,11 +75,11 @@ public class GameControl : MonoBehaviour {
         Resources[ShipIndex][1] = 4;
         Resources[ShipIndex][2] = 10;
         UpdateResourceText();
-        PC.TakeTurn();
-        PC.TakeTurn();
-        PC.TakeTurn();
-        PC.TakeTurn();
         /*
+         *         PC.TakeTurn();
+        PC.TakeTurn();
+        PC.TakeTurn();
+        PC.TakeTurn();
         SelectedPlace = Places[0];
         Places[0].ShipCount[0] = 3;
         Places[0].ShipCount[1] = 9;
@@ -380,11 +381,19 @@ public class GameControl : MonoBehaviour {
         UpdateMapUnits();
     }
 
+    public void cancelMoveMode()
+    {
+        CurrentState = GameState.PlayerTurn;
+        MsgText.text = "";
+        CancelMove.transform.position = new Vector3(100, 100, 100);
+    }
+
     public void MoveMode()
     {
         CurrentState = GameState.Move;
         SetActionsvisible(false);
         MsgText.text = "Select place to move from";
+        CancelMove.transform.position = new Vector3(6.7f, -7.8f, 0);
     }
     public void MakeMove()
     {
@@ -412,7 +421,7 @@ public class GameControl : MonoBehaviour {
                     StartPlace.UnitCount[UnitIndex + i] -= (int)MoveSlider.transform.GetChild(0).GetChild(5 + i).GetComponent<Slider>().value;
                     SelectedPlace.UnitCount[UnitIndex + i] += (int)MoveSlider.transform.GetChild(0).GetChild(5 + i).GetComponent<Slider>().value;
                 }
-                if (!RegimePlayer && SelectedPlace.HasPlayerLead() && !StartPlace.HasPlayerLead())
+                if (!RegimePlayer && SelectedPlace.HasPlayerLead() && !StartPlace.HasPlayerLead() && MoveSlider.transform.GetChild(0).GetChild(5 + 2).GetComponent<Slider>().value==1)
                 {
                     SelectedPlace.LeaderID = StartPlace.LeaderID;
                     StartPlace.LeaderID = -1;
@@ -468,14 +477,18 @@ public class GameControl : MonoBehaviour {
 
     public void NextTurn()
     {
-        CurrentState = GameState.FX;
-        foreach (PlaceScript p in Places)
-            p.Tick();
-        PC.TakeTurn();
-        Resources[ShipIndex][0]++;
-        Resources[ShipIndex][1]++;
-        Resources[ShipIndex][2]++;
-        UpdateResourceText();
+        if (CurrentState == GameState.PlayerTurn)
+        {
+            SetActionsvisible(false);
+            CurrentState = GameState.FX;
+            foreach (PlaceScript p in Places)
+                p.Tick();
+            PC.TakeTurn();
+            Resources[ShipIndex][0]++;
+            Resources[ShipIndex][1]++;
+            Resources[ShipIndex][2]++;
+            UpdateResourceText();
+        }
     }
 
     public void SetMenuButtons()
