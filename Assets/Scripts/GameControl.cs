@@ -41,6 +41,7 @@ public class GameControl : MonoBehaviour {
     public int[] LiberationCost;
     public PlayerControl PC;
     public Button CancelMove;
+    public int[] StartUnits;
 
     private void Awake()
     {
@@ -72,8 +73,8 @@ public class GameControl : MonoBehaviour {
         UpdateMapUnits();
         Camera.main.transform.position = new Vector3(0, 0, -10);
         Resources[ShipIndex][0] = 3;
-        Resources[ShipIndex][1] = 4;
-        Resources[ShipIndex][2] = 10;
+        Resources[ShipIndex][1] = 6;
+        Resources[ShipIndex][2] = 30;
         UpdateResourceText();
         /*
          *         PC.TakeTurn();
@@ -107,28 +108,50 @@ public class GameControl : MonoBehaviour {
         for (int i = 0; i < 24; i++)
             nums.Add(i);
         List<int> Ls = new List<int> { 0, 6, 7};
-        for(int i=0;i<6;i++)
+        for(int i=0;i<13;i++)
         {
             int r = RNG.Next(nums.Count);
             if (i < 3)
             {
-                Places[nums[r]].UnitCount[0] = 20;
-                Places[nums[r]].UnitCount[1] = 10;
-                Places[nums[r]].UnitCount[2] = 1;
+                int c = 1;
+                if (!RegimePlayer)
+                    c = 2;
+                Places[nums[r]].UnitCount[0] = StartUnits[0]/c;
+                Places[nums[r]].UnitCount[1] = StartUnits[1]/c;
+                Places[nums[r]].UnitCount[2] = StartUnits[2];
                 int x = RNG.Next(Ls.Count);
                 Places[nums[r]].LeaderID = Ls[x];
                 Ls.RemoveAt(x);
-                Places[nums[r]].ShipCount[0] = 6;
-                Places[nums[r]].transform.GetChild(2).GetComponent<SpriteRenderer>().sprite = GameControl.singleton.UnitSprites[2+ Places[nums[r]].LeaderID];
+                Places[nums[r]].ShipCount[0] = StartUnits[3]/c;
+                if(!RegimePlayer)
+                    Places[nums[r]].transform.GetChild(2).GetComponent<SpriteRenderer>().sprite = GameControl.singleton.UnitSprites[2+ Places[nums[r]].LeaderID];
+                print(Places[nums[r]].name);
+            }
+            else if(i<6)
+            {
+                int c = 1;
+                if (RegimePlayer)
+                    c = 2;
+                Places[nums[r]].UnitCount[3] = StartUnits[0]/c;
+                Places[nums[r]].UnitCount[4] = StartUnits[1]/c;
+                Places[nums[r]].UnitCount[5] = StartUnits[2];
+                Places[nums[r]].ShipCount[1] = StartUnits[3]/c;
                 print(Places[nums[r]].name);
             }
             else
             {
-                Places[nums[r]].UnitCount[3] = 20;
-                Places[nums[r]].UnitCount[4] = 10;
-                Places[nums[r]].UnitCount[5] = 1;
-                Places[nums[r]].ShipCount[1] = 6;
-                print(Places[nums[r]].name);
+                if(RegimePlayer)
+                {
+                    Places[nums[r]].UnitCount[0] = StartUnits[0] / 4;
+                    Places[nums[r]].UnitCount[1] = StartUnits[1] / 4;
+                    Places[nums[r]].ShipCount[0] = StartUnits[3] / 4;
+                }
+                else
+                {
+                    Places[nums[r]].UnitCount[3] = StartUnits[0] / 4;
+                    Places[nums[r]].UnitCount[4] = StartUnits[1] / 4;
+                    Places[nums[r]].ShipCount[1] = StartUnits[3] / 4;
+                }
             }
             nums.RemoveAt(r);
         }

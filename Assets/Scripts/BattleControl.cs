@@ -183,17 +183,18 @@ public class BattleControl : MonoBehaviour {
         else
             MsgText.text = "Revos Win!";
         BattleAI.singleton.End();
-        bool b = GameControl.singleton.SelectedPlace.HasPlayerLead();
+        bool b = GameControl.singleton.SelectedPlace.UnitCount[2]==1;
         for (int i = 0; i < 6; i++)
         {
             GameControl.singleton.SelectedPlace.UnitCount[i] = UnitCounts[i];
         }
-        if (b & !GameControl.singleton.SelectedPlace.HasPlayerLead())
+        if (b && GameControl.singleton.SelectedPlace.UnitCount[2] ==0)
         {
             int a = GameControl.singleton.SelectedPlace.LeaderID;
             if (a > 0)
                 a -= 5;
             GameControl.singleton.PC.LivingLeads[a] = false;
+            GameControl.singleton.SelectedPlace.LeaderID = -1;
         }
         GameControl.singleton.PC.CheckWin();
         button.onClick.RemoveAllListeners();
