@@ -65,7 +65,6 @@ public class GameControl : MonoBehaviour {
             MoveSlider.transform.GetChild(0).GetChild(6).GetChild(2).GetChild(0).GetComponent<Image>().sprite = UnitSprites[5];
             MoveSlider.transform.GetChild(0).GetChild(7).GetChild(2).GetChild(0).GetComponent<Image>().sprite = UnitSprites[6];
         }
-
         CurrentState = GameState.PlayerTurn;
         ShipControl.singleton.SetAIShips();
         BattleControl.singleton.SetPlayerOwned();
@@ -76,16 +75,6 @@ public class GameControl : MonoBehaviour {
         Resources[ShipIndex][1] = 6;
         Resources[ShipIndex][2] = 30;
         UpdateResourceText();
-        /*
-         *         PC.TakeTurn();
-        PC.TakeTurn();
-        PC.TakeTurn();
-        PC.TakeTurn();
-        SelectedPlace = Places[0];
-        Places[0].ShipCount[0] = 3;
-        Places[0].ShipCount[1] = 9;
-        ShipControl.singleton.BeginFleet("Test Battle", false, false);
-        */
     }
 
     public void StartPlaces()
@@ -142,15 +131,15 @@ public class GameControl : MonoBehaviour {
             {
                 if(RegimePlayer)
                 {
-                    Places[nums[r]].UnitCount[0] = StartUnits[0] / 4;
-                    Places[nums[r]].UnitCount[1] = StartUnits[1] / 4;
-                    Places[nums[r]].ShipCount[0] = StartUnits[3] / 4;
+                    Places[nums[r]].UnitCount[0] = StartUnits[0] / 3;
+                    Places[nums[r]].UnitCount[1] = StartUnits[1] / 3;
+                    Places[nums[r]].ShipCount[0] = StartUnits[3] / 3;
                 }
                 else
                 {
-                    Places[nums[r]].UnitCount[3] = StartUnits[0] / 4;
-                    Places[nums[r]].UnitCount[4] = StartUnits[1] / 4;
-                    Places[nums[r]].ShipCount[1] = StartUnits[3] / 4;
+                    Places[nums[r]].UnitCount[3] = StartUnits[0] / 3;
+                    Places[nums[r]].UnitCount[4] = StartUnits[1] / 3;
+                    Places[nums[r]].ShipCount[1] = StartUnits[3] / 3;
                 }
             }
             nums.RemoveAt(r);
@@ -165,16 +154,17 @@ public class GameControl : MonoBehaviour {
 
     public void GatherResource()
     {
-        if (SelectedPlace.ResourceID < 3)
-        {
-            Resources[ShipIndex][SelectedPlace.ResourceID] +=RNG.Next(2, 8);
-            SelectedPlace.ResourceID += RNG.Next(5, 10);
+            Resources[ShipIndex][SelectedPlace.ResourceID] +=RNG.Next(2, 9);
+            int r= RNG.Next(3, 10);
+            int lr= RNG.Next(3, 10);
+        if (r > lr)
+            r = lr;
+        SelectedPlace.ResourceID += r;
             UpdateResourceText();
             SetActionsvisible(false);
             CurrentState = GameState.PlayerTurn;
             if(PC.LivingLeads[1])
                 PC.CheckWin();
-        }
     }
 
     public void showTech()
@@ -472,7 +462,7 @@ public class GameControl : MonoBehaviour {
                 StartPlace.UnitCount[i] = SelectedPlace.UnitCount[i];
                 SelectedPlace.UnitCount[i] = 0;
             }
-            if (!RegimePlayer && SelectedPlace.UnitCount[2] == 1)
+            if (!RegimePlayer && SelectedPlace.UnitCount[2] == 1 && StartPlace.LeaderID==-1)
             {
                 StartPlace.LeaderID = SelectedPlace.LeaderID;
                 SelectedPlace.LeaderID = -1;
@@ -485,7 +475,7 @@ public class GameControl : MonoBehaviour {
                 StartPlace.UnitCount[i] = SelectedPlace.UnitCount[i];
                 SelectedPlace.UnitCount[i] = 0;
             }
-            if (RegimePlayer && SelectedPlace.UnitCount[2] == 1)
+            if (RegimePlayer && SelectedPlace.UnitCount[2] == 1 && StartPlace.LeaderID == -1)
             {
                 StartPlace.LeaderID = SelectedPlace.LeaderID;
                 SelectedPlace.LeaderID = -1;
@@ -509,9 +499,15 @@ public class GameControl : MonoBehaviour {
             foreach (PlaceScript p in Places)
                 p.Tick();
             PC.TakeTurn();
-            Resources[ShipIndex][0]++;
-            Resources[ShipIndex][1]++;
-            Resources[ShipIndex][2]++;
+            Resources[ShipIndex][0]+=RNG.Next(1,5);
+            Resources[ShipIndex][1]+=RNG.Next(1,5);
+            int c = 0;
+            foreach(PlaceScript p in Places)
+            {
+                if (p.loyalRegime == RegimePlayer)
+                    c++;
+            }
+            Resources[ShipIndex][2] += RNG.Next(3, 3 + (c / 2));
             UpdateResourceText();
         }
     }
@@ -528,7 +524,7 @@ public class GameControl : MonoBehaviour {
             allowedActions[2] = Resources[ShipIndex][1] >= ShipCost[0] && Resources[ShipIndex][2] >= ShipCost[1];
         allowedActions[3]= Resources[ShipIndex][2] > IntelCost;
         allowedActions[4] = SelectedPlace.loyalRegime != RegimePlayer && SelectedPlace.HasPlayerLead() && Resources[ShipIndex][0] >= LiberationCost[0] && Resources[ShipIndex][1] >= LiberationCost[1] && Resources[ShipIndex][2] >= LiberationCost[2];
-        allowedActions[5] = SelectedPlace.UnitCount[UnitIndex] > 0 || SelectedPlace.UnitCount[UnitIndex + 1] > 0 || SelectedPlace.UnitCount[UnitIndex + 2] > 0;
+        allowedActions[5] = (SelectedPlace.UnitCount[UnitIndex] > 0 || SelectedPlace.UnitCount[UnitIndex + 1] > 0 || SelectedPlace.UnitCount[UnitIndex + 2] > 0) && SelectedPlace.ResourceID < 3;
         if (SelectedPlace.TechID >= 0)
         {
             if (RegimePlayer)
